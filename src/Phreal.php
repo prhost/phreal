@@ -19,6 +19,11 @@ class Phreal
      */
     public function run($phrase)
     {
-        return $phrase;
+        \Event('click', '#idtal')->set('name');
+    }
+
+    public function handler()
+    {
+        \Response('#idtal', 'wawa');
     }
 }
