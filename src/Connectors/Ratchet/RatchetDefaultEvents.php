@@ -1,4 +1,6 @@
-<?php namespace Prhost\Phreal\Connectors;
+<?php namespace Prhost\Phreal\Connectors\Ratchet;
+
+use Prhost\Phreal\Core\ConnectionManager;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
@@ -8,49 +10,54 @@ use Ratchet\MessageComponentInterface;
  * Date: 7/8/2015
  * Time: 1:38 PM
  */
-class RatchetDefaultEvents implements MessageComponentInterface
-{
-    /**
-     * When a new connection is opened it will be passed to this method
-     * @param  ConnectionInterface $conn The socket/connection that just connected to your application
-     * @throws \Exception
-     */
-    function onOpen(ConnectionInterface $conn)
-    {
-        // TODO: Implement onOpen() method.
-    }
+class RatchetDefaultEvents implements MessageComponentInterface {
 
     /**
-     * This is called before or after a socket is closed (depends on how it's closed).  SendMessage to $conn will not result in an error if it has already been closed.
-     * @param  ConnectionInterface $conn The socket/connection that is closing/closed
-     * @throws \Exception
+     * @var ConnectionManager
      */
-    function onClose(ConnectionInterface $conn)
-    {
-        // TODO: Implement onClose() method.
+    private $connectionManager;
+
+    public function __construct() {
+        $this->connectionManager = new ConnectionManager();
     }
 
-    /**
-     * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
-     * the Exception is sent back down the stack, handled by the Server and bubbled back up the application through this method
-     * @param  ConnectionInterface $conn
-     * @param  \Exception $e
-     * @throws \Exception
-     */
-    function onError(ConnectionInterface $conn, \Exception $e)
-    {
-        // TODO: Implement onError() method.
-    }
+    public function onOpen(ConnectionInterface $conn){
 
-    /**
-     * Triggered when a client sends data through the socket
-     * @param  \Ratchet\ConnectionInterface $from The socket/connection that sent the message to your application
-     * @param  string $msg The message received
-     * @throws \Exception
-     */
-    function onMessage(ConnectionInterface $from, $msg)
-    {
+        $genericConnection = new RatchetConnectionGeneralizer($conn);
+
+        $connection = $genericConnection->getConnection();
+        $uniqueId   = $genericConnection->getId();
+
+        $this->connectionManager->addConnection($connection,$uniqueId);
 
     }
 
+    public function onMessage(ConnectionInterface $from, $msg) {
+
+        $genericConnection  = new RatchetConnectionGeneralizer($from);
+        $connection         = $genericConnection->getConnection();
+
+        foreach ($this->connectionManager->getAll() as $client) {
+            if ($from !== $client) {
+                // The sender is not the receiver, send to each client connected
+                $client->send($msg);
+            }
+        }
+    }
+
+    public function onClose(ConnectionInterface $conn) {
+
+        $genericConnection = new RatchetConnectionGeneralizer($conn);
+
+        $uniqueId   = $genericConnection->getId();
+
+        $this->connectionManager->removeConenction($uniqueId);
+
+    }
+
+    public function onError(ConnectionInterface $conn, \Exception $e) {
+        echo "An error has occurred: {$e->getMessage()}\n";
+
+        $conn->close();
+    }
 }

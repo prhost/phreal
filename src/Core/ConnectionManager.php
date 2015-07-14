@@ -1,26 +1,44 @@
-<?php namespace Prhost\Phreal\Core;
-use Prhost\Phreal\Connectors\RatchetConnector;
-use Prhost\Phreal\Definitions\ConnectionInterface;
-
+<?php
 /**
  * Created by PhpStorm.
  * User: Hélio
- * Date: 7/8/2015
- * Time: 1:24 PM
+ * Date: 7/10/2015
+ * Time: 12:28 PM
  */
+
+namespace Prhost\Phreal\Core;
+
+
+use Prhost\Phreal\Connectors\Ratchet\RatchetConnectionGeneralizer;
+
 class ConnectionManager
 {
 
     /**
-     * @var ConnectionInterface
+     * @var \SplObjectStorage
      */
-    public $connector ;
+    private $connectedClients;
 
-    public function __construct(ConnectionInterface $connector){
-        $this->connector = $connector;
+    public function __construct()
+    {
+        $this->connectedClients = array();
     }
 
+    public function addConnection($connection,$index)
+    {
 
+        $this->connectedClients[$index] = $connection;
+        return $index;
+    }
 
+    public function retrieveConnection($index)
+    {
+        return $this->connectedClients[$index];
+    }
+
+    public function removeConenction($index)
+    {
+        unset($this->connectedClients[$index]);
+    }
 
 }

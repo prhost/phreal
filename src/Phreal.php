@@ -24,3 +24,6 @@ class Phreal
         ];
     }
 }
+
+
+$socketLoucura = new \Phreal();
