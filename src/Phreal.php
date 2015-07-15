@@ -2,6 +2,8 @@
 
 namespace Prhost\Phreal;
 
+use Prhost\Phreal\Core\ConnectionManager;
+
 class Phreal
 {
     /**
@@ -9,21 +11,19 @@ class Phreal
      */
     public function __construct()
     {
-        // constructor body
+        $class = $this->config();
+        $conector = new $class['connector'];
+
+        $conn = new ConnectionManager($conector);
     }
 
-    /**
-     *
-     * @param string $phrase Phrase to return
-     * @return string Returns the phrase passed in
-     */
-    public function run($phrase)
+    public function config()
     {
-        \Event('click', '#idtal')->set('name');
-    }
-
-    public function handler()
-    {
-        \Response('#idtal', 'wawa');
+        return [
+            'conenctor' => new Connectors\RatchetConnector
+        ];
     }
 }
+
+
+$socketLoucura = new \Phreal();
