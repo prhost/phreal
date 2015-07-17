@@ -13,8 +13,15 @@ use Prhost\Phreal\Messages\MessageOut;
 
 class Connection
 {
+    private $ratchetConnection;
+
+    public function __construct($connection)
+    {
+        $this->ratchetConnection = $connection;
+    }
+
     public function send(MessageOut $message)
     {
-        
+        $this->ratchetConnection->set();
     }
 }

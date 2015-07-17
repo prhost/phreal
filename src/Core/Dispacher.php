@@ -12,6 +12,13 @@ namespace Prhost\Phreal\Core;
 class Dispacher
 {
 
+    public function __construct()
+    {
+
+
+
+    }
+
     public function routeMessage()
     {
 
