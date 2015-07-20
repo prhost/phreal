@@ -12,52 +12,23 @@ use Ratchet\MessageComponentInterface;
  */
 class RatchetDefaultEvents implements MessageComponentInterface {
 
-    /**
-     * @var ConnectionManager
-     */
-    private $connectionManager;
-
-    public function __construct() {
-        $this->connectionManager = new ConnectionManager();
-    }
 
     public function onOpen(ConnectionInterface $conn){
 
-        $genericConnection = new RatchetConnectionGeneralizer($conn);
-
-        $connection = $genericConnection->getConnection();
-        $uniqueId   = $genericConnection->getId();
-
-        $this->connectionManager->addConnection($connection,$uniqueId);
-
+        ConnectionManager::addConnection($conn);
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-
-        $genericConnection  = new RatchetConnectionGeneralizer($from);
-        $connection         = $genericConnection->getConnection();
-
-        foreach ($this->connectionManager->getAll() as $client) {
-            if ($from !== $client) {
-                // The sender is not the receiver, send to each client connected
-                $client->send($msg);
-            }
-        }
+        ConnectionManager::onMessage($from,$msg);
     }
 
     public function onClose(ConnectionInterface $conn) {
 
-        $genericConnection = new RatchetConnectionGeneralizer($conn);
-
-        $uniqueId   = $genericConnection->getId();
-
-        $this->connectionManager->removeConenction($uniqueId);
+        ConnectionManager::remConnection($conn);
 
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        echo "An error has occurred: {$e->getMessage()}\n";
-
-        $conn->close();
+        ConnectionManager::onError($conn,$e);
     }
 }

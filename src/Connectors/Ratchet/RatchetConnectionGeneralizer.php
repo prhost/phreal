@@ -24,11 +24,12 @@ class RatchetConnectionGeneralizer
 
     public function send(MessageOut $msg){
 
-    }
+}
 
     public function getConnection()
     {
-        //TODO popular o Conenction com dados necessários
+
+
 
         return $this->genericConnection;
     }

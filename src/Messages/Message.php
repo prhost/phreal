@@ -8,18 +8,54 @@
  */
 class Message
 {
-    public function __construct()
+
+    private $destination = [
+        'eventAlias' => null,
+    ];
+
+    private $data   =   [
+
+    ];
+
+
+    public function __construct($message)
     {
-        $this->setStucture();
+        $this->validateJson($message);
+
+        $messageRaw = json_decode($message);
+        $this->populate($messageRaw);
     }
 
+    public function validadeJson($message){
 
-    public function setStucture(){
+
 
     }
 
-    public function getContent()
+    public function populate(\stdClass $messageRaw)
     {
+        $this->setEvent($messageRaw->event);
+        $this->setData($messageRaw->data);
+    }
 
+    private function setEvent($event)
+    {
+        $this->destination['eventAlias'] = $event;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param mixed $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
     }
 }

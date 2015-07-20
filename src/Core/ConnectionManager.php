@@ -10,6 +10,7 @@ namespace Prhost\Phreal\Core;
 
 
 use Prhost\Phreal\Connectors\Ratchet\RatchetConnectionGeneralizer;
+use Prhost\Phreal\Messages\MessageIn;
 
 class ConnectionManager
 {
@@ -17,28 +18,44 @@ class ConnectionManager
     /**
      * @var \SplObjectStorage
      */
-    private $connectedClients;
+    private static $connectedClients = null;
 
-    public function __construct()
+
+
+    public static function getInstance()
     {
-        $this->connectedClients = array();
+        if(self::$connectedClients == null)
+        {
+            self::$connectedClients = new \SplObjectStorage();
+        }
+
+        return self::$connectedClients;
     }
 
-    public function addConnection($connection,$index)
+
+    public static function addConnection($connection)
     {
 
-        $this->connectedClients[$index] = $connection;
-        return $index;
+        echo 'NEW DOIDÂO HAS BEN FOUND';
+        self::getInstance()->attach($connection);
     }
 
-    public function retrieveConnection($index)
+    public static function remConnection($connection)
     {
-        return $this->connectedClients[$index];
+        echo 'NEW DOIDÂO HAS GONE AWAY';
+        self::getInstance()->detach($connection);
     }
 
-    public function removeConenction($index)
+    public static function onMessage($from,$message)
     {
-        unset($this->connectedClients[$index]);
+        $messageIn = new MessageIn($message);
+        $d = new Dispacher($from, $messageIn);
+        $d->routeMessage();
+    }
+
+    public static function onError($from, \Exception $e)
+    {
+        echo $e->getMessage();
     }
 
 }
