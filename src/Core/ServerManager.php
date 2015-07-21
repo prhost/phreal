@@ -1,16 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hélio
- * Date: 7/9/2015
- * Time: 12:53 PM
- */
-
 namespace Prhost\Phreal\Core;
-
 
 use Prhost\Phreal\Connectors\RatchetServer;
 
+/**
+ * Class ServerManager
+ * @package Prhost\Phreal\Core
+ */
 class ServerManager
 {
     /**
@@ -21,8 +17,8 @@ class ServerManager
     public function __construct(array $config)
     {
 
-        $server         = new $config['default']['connector'];
-        $server->port   = $config['default']['port'];
+        $server = new $config['default']['connector'];
+        $server->port = $config['default']['port'];
         $this->server = $server;
     }
 

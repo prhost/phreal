@@ -1,50 +1,71 @@
 <?php namespace Prhost\Phreal\Messages;
 
+use Prhost\Phreal\Exceptions\InvalidMessageFormat;
+
 /**
- * Created by PhpStorm.
- * User: Hélio
- * Date: 7/8/2015
- * Time: 1:20 PM
+ * Class Message
+ * @package Prhost\Phreal\Messages
  */
 class Message
 {
-
     private $destination = [
-        'eventAlias' => null,
+        'eventCall'  => null,
+        'eventAlias' => null
     ];
 
-    private $data   =   [
+    private $data = [];
 
-    ];
-
-
-    public function __construct($message)
+    public function __construct($message, MessageOut $messageOut)
     {
-        $this->validateJson($message);
+        try {
 
-        $messageRaw = json_decode($message);
-        $this->populate($messageRaw);
-    }
+            $messageRaw = json_decode($message);
 
-    public function validadeJson($message){
+            InvalidMessageFormat::validateJson();
 
+            $this->populate($messageRaw);
 
+            //example message out
+            $messageOut->setCode(200);
+            $messageOut->setMessage('Ok');
+            $messageOut->show();
 
-    }
+        } catch (InvalidMessageFormat $e) {
 
-    public function populate(\stdClass $messageRaw)
-    {
-        $this->setEvent($messageRaw->event);
-        $this->setData($messageRaw->data);
-    }
+            InvalidMessageFormat::show($e);
 
-    private function setEvent($event)
-    {
-        $this->destination['eventAlias'] = $event;
+        }
     }
 
     /**
-     * @return mixed
+     * @param \stdClass $messageRaw
+     */
+    public function populate(\stdClass $messageRaw)
+    {
+        $this->setEvent($messageRaw);
+        $this->setData($messageRaw);
+    }
+
+    /**
+     * @param \stdClass $message
+     */
+    private function setEvent(\stdClass $message)
+    {
+        try {
+            if (isset($message->event)) {
+                $event = $message->event;
+                $this->destination['eventAlias'] = $event;
+            } else {
+                throw new \Exception('Event required', 400);
+            }
+
+        } catch (\Exception $e) {
+            MessageOut::render($e);
+        }
+    }
+
+    /**
+     * @return array
      */
     public function getData()
     {
@@ -52,10 +73,12 @@ class Message
     }
 
     /**
-     * @param mixed $data
+     * @param \stdClass $message
      */
-    public function setData($data)
+    public function setData(\stdClass $message)
     {
-        $this->data = $data;
+        if (isset($message->data)) {
+            $this->data = $message->data;
+        }
     }
 }
