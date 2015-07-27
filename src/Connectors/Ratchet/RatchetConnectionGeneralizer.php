@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Hélio
+ * User: Hï¿½lio
  * Date: 7/9/2015
  * Time: 1:18 PM
  */
@@ -28,9 +28,6 @@ class RatchetConnectionGeneralizer
 
     public function getConnection()
     {
-
-
-
         return $this->genericConnection;
     }
 

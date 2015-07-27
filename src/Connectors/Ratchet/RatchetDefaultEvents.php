@@ -6,7 +6,7 @@ use Ratchet\MessageComponentInterface;
 
 /**
  * Created by PhpStorm.
- * User: Hélio
+ * User: Hï¿½lio
  * Date: 7/8/2015
  * Time: 1:38 PM
  */
@@ -23,9 +23,7 @@ class RatchetDefaultEvents implements MessageComponentInterface {
     }
 
     public function onClose(ConnectionInterface $conn) {
-
         ConnectionManager::remConnection($conn);
-
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {

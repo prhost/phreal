@@ -17,12 +17,14 @@ class MessageOut extends Message
      */
     private $message = '';
 
-    public static function show()
+    public function show($conn)
     {
-        echo json_encode([
-            'code'    => self::getCode(),
-            'message' => self::getMessage(),
+        $json = json_encode([
+            'code'    => $this->getCode(),
+            'message' => $this->getMessage(),
         ]);
+
+        $conn->send($json);
     }
 
     /**

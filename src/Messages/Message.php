@@ -15,26 +15,13 @@ class Message
 
     private $data = [];
 
-    public function __construct($message, MessageOut $messageOut)
+    public function __construct($message)
     {
-        try {
+        $messageRaw = json_decode($message);
 
-            $messageRaw = json_decode($message);
+        InvalidMessageFormat::validateJson();
 
-            InvalidMessageFormat::validateJson();
-
-            $this->populate($messageRaw);
-
-            //example message out
-            $messageOut->setCode(200);
-            $messageOut->setMessage('Ok');
-            $messageOut->show();
-
-        } catch (InvalidMessageFormat $e) {
-
-            InvalidMessageFormat::show($e);
-
-        }
+        $this->populate($messageRaw);
     }
 
     /**
@@ -48,19 +35,15 @@ class Message
 
     /**
      * @param \stdClass $message
+     * @throws \Exception
      */
     private function setEvent(\stdClass $message)
     {
-        try {
-            if (isset($message->event)) {
-                $event = $message->event;
-                $this->destination['eventAlias'] = $event;
-            } else {
-                throw new \Exception('Event required', 400);
-            }
-
-        } catch (\Exception $e) {
-            MessageOut::render($e);
+        if ($message->event) {
+            $event = $message->event;
+            $this->destination['eventAlias'] = $event;
+        } else {
+            throw new \Exception('Event required', 400);
         }
     }
 
